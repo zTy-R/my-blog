@@ -20,28 +20,56 @@ const meta = {
   <Button title='Back' href='/blog' variant='back' />
 
   <main class='mt-6 lg:mt-10'>
-    <div id='content-header' class='animate'>
-      <h1 class='mb-6 text-3xl font-medium'>Archives</h1>
+    <!-- 标题 + 筛选器同行 -->
+    <div id='content-header' class='animate flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+      <h1 class='text-3xl font-medium'>Archives</h1>
+
+      <!-- 红绿蓝筛选器 -->
+      <div class='flex gap-3' id='tag-filter'>
+        <button
+          class='filter-btn flex h-9 items-center justify-center rounded-md px-5 text-sm font-medium text-white transition-all duration-200'
+          data-tag='daily'
+          style='background-color:#ef4444;'
+        >
+          Daily
+        </button>
+        <button
+          class='filter-btn flex h-9 items-center justify-center rounded-md px-5 text-sm font-medium text-white transition-all duration-200'
+          data-tag='notes'
+          style='background-color:#22c55e;'
+        >
+          Notes
+        </button>
+        <button
+          class='filter-btn flex h-9 items-center justify-center rounded-md px-5 text-sm font-medium text-white transition-all duration-200'
+          data-tag='study'
+          style='background-color:#3b82f6;'
+        >
+          Study
+        </button>
+      </div>
     </div>
 
-    {allPosts.length === 0 && <p>No posts yet.</p>}
+    {allPosts.length === 0 && <p class='mt-10'>No posts yet.</p>}
 
-    <section id='content' class='animate' aria-label='Blog post list'>
+    <section id='content' class='animate mt-10' aria-label='Blog post list'>
       {
         allPostsByYear.map(([year, posts]) => (
-          <div class='relative mt-20'>
+          <div class='relative mt-20 year-group' data-year={year}>
             <h2
               class='absolute -start-6 -top-16 z-0 text-9xl font-bold text-transparent opacity-12 dark:opacity-25'
               style='-webkit-text-stroke-width:2px;-webkit-text-stroke-color:hsl(var(--foreground)/var(--un-text-opacity))'
             >
               <samp>{year}</samp>
             </h2>
-            <p class='px-5 text-muted-foreground'>
+            <p class='year-count px-5 text-muted-foreground'>
               {posts.length} post{posts.length > 1 && 's'}
             </p>
             <ul class='flex flex-col text-start'>
               {posts.map((p) => (
-                <PostPreview post={p} class='border-0 bg-transparent py-2' />
+                <li class='post-item' data-tags={JSON.stringify(p.data.tags ?? [])}>
+                  <PostPreview post={p} class='border-0 bg-transparent py-2' />
+                </li>
               ))}
             </ul>
           </div>
@@ -50,3 +78,88 @@ const meta = {
     </section>
   </main>
 </PageLayout>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn')
+  const yearGroups = document.querySelectorAll<HTMLElement>('.year-group')
+
+  // 从 URL 读取初始筛选状态（全部小写匹配）
+  const url = new URL(window.location.href)
+  const filterParam = url.searchParams.get('filter')
+  let activeFilters: string[] = filterParam
+    ? filterParam.split(',').filter((f) => ['daily', 'notes', 'study'].includes(f))
+    : ['daily', 'notes', 'study']
+
+  // 确保至少有 1 个
+  if (activeFilters.length === 0) activeFilters = ['daily', 'notes', 'study']
+
+  const colorMap: Record<string, string> = {
+    daily: '#ef4444',
+    notes: '#22c55e',
+    study: '#3b82f6'
+  }
+
+  function updateUI() {
+    buttons.forEach((btn) => {
+      const tag = btn.dataset.tag!
+      const isActive = activeFilters.includes(tag)
+      const baseColor = colorMap[tag]
+
+      if (isActive) {
+        btn.style.backgroundColor = baseColor
+        btn.style.opacity = '1'
+        btn.style.transform = 'scale(1)'
+        btn.style.boxShadow = `0 0 0 2px ${baseColor}66`
+      } else {
+        btn.style.backgroundColor = baseColor
+        btn.style.opacity = '0.35'
+        btn.style.transform = 'scale(0.95)'
+        btn.style.boxShadow = 'none'
+      }
+    })
+
+    // 筛选文章并更新年份计数
+    yearGroups.forEach((group) => {
+      const groupPosts = group.querySelectorAll<HTMLElement>('.post-item')
+      let visibleCount = 0
+
+      groupPosts.forEach((post) => {
+        const tags: string[] = JSON.parse(post.dataset.tags || '[]')
+        const hasMatch = activeFilters.some((f) => tags.includes(f))
+        post.style.display = hasMatch ? '' : 'none'
+        if (hasMatch) visibleCount++
+      })
+
+      // 无可见文章则隐藏整个年份组
+      group.style.display = visibleCount > 0 ? '' : 'none'
+
+      // 更新计数文本
+      const countEl = group.querySelector<HTMLElement>('.year-count')
+      if (countEl) {
+        countEl.textContent = `${visibleCount} post${visibleCount > 1 ? 's' : ''}`
+      }
+    })
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tag = btn.dataset.tag!
+
+      if (activeFilters.includes(tag)) {
+        // 取消选中，但至少要保留一个
+        if (activeFilters.length > 1) {
+          activeFilters = activeFilters.filter((f) => f !== tag)
+        }
+      } else {
+        // 选中（最多 3 个，即全选）
+        if (activeFilters.length < 3) {
+          activeFilters.push(tag)
+        }
+      }
+
+      updateUI()
+    })
+  })
+
+  updateUI()
+</script>

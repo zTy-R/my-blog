@@ -46,16 +46,17 @@ export const theme: ThemeUserConfig = {
   customCss: [],
 
   /** Configure the header of your site. */
-    header: {
-    menu: [
-      { title: 'Daily', link: '/tags/daily' },
-      { title: 'Notes', link: '/tags/notes' },
-      { title: 'Study', link: '/tags/study' },
-      { title: 'Projects', link: '/projects' },
-      { title: 'Links', link: '/links' },
-      { title: 'About', link: '/about' }
-    ]
-  },           // ← 注意这里是 }, 不是 }
+  header: {
+  menu: [
+    { title: 'Blog', link: '/blog' },
+    { title: 'Daily', link: '/daily' },      // ← 添加
+    { title: 'Notes', link: '/notes' },      // ← 添加
+    { title: 'Study', link: '/study' },      // ← 添加
+    { title: 'Projects', link: '/projects' },
+    { title: 'Links', link: '/links' },
+    { title: 'About', link: '/about' }
+  ]
+},
 
   /** Configure the footer of your site. */
   footer: {
