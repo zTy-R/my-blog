@@ -2,19 +2,16 @@
 import { getCollection } from 'astro:content'
 import PageLayout from '@/layouts/CommonPage.astro'
 
-// 获取所有博客文章
 const allPosts = await getCollection('blog')
-
-// 过滤出标签包含 'daily' 的文章，按日期倒序
 const posts = allPosts
   .filter(post => post.data.tags?.includes('daily'))
   .sort((a, b) => new Date(b.data.publishDate).valueOf() - new Date(a.data.publishDate).valueOf())
 
-const headings = [{ depth: 2, slug: 'daily', text: 'Daily Life' }]
+const headings = [{ depth: 2, slug: 'daily', text: 'Daily' }]
 ---
 
-<PageLayout title='Daily Life' {headings}>
-  <h2 id='daily'>Daily Life</h2>
+<PageLayout title='Daily' {headings}>
+  <h2 id='daily'>Daily</h2>
   <p class="mb-6 text-gray-400">Page 1 - Showing {posts.length} of {posts.length} posts</p>
   
   <div class="grid gap-6">
