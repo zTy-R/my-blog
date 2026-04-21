@@ -18,7 +18,7 @@ const headings = [{ depth: 2, slug: 'notes', text: 'Notes' }]
     {posts.map(post => (
       <article class="border border-gray-700 rounded-lg p-5 hover:bg-gray-800 transition">
         <h3 class="text-xl font-bold">
-          <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+          <a href={`/blog/${post.id}`}>{post.data.title}</a>
         </h3>
         <p class="text-gray-400 mt-2">{post.data.description}</p>
         <div class="flex gap-3 mt-3 text-sm text-gray-500">
