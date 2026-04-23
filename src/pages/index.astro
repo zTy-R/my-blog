@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets'
-
+import { Button, Collapse, Spoiler, Timeline } from 'astro-pure/user'
 import { Quote } from 'astro-pure/advanced'
 import { PostPreview } from 'astro-pure/components/pages'
 import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
@@ -74,16 +74,18 @@ if (!images[imagePath])
     </section>
 
     <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
-      <Section title='About'>
-       <p class='text-muted-foreground'>你好，我叫Lukas！目前是一个一事无成的本科生。</p>
-       <p class='text-muted-foreground'>在华清大学无穹书院就读，平常没事干喜欢研究CTF、ICPC、SC相关赛事的内容。</p>
-       <p class='text-muted-foreground'>AI方向本科生，但还没确定好方向，迷茫ing...</p>
-       
-       
-       
-        
-        <Button title='More about me' class='w-fit self-end' href='/about' variant='ahead' />
-      </Section>
+     <Section title='About'>
+  <p class='text-muted-foreground'>你好，我叫 Lukas！一个还在探索的本科生。</p>
+  <p class='text-muted-foreground'>
+    在华清大学无穹书院就读，平常喜欢研究 CTF、ICPC、SC 相关赛事。偶尔也会想想人生，观察社会。
+    <Spoiler>（感觉这个介绍有点嘉豪）</Spoiler>
+  </p>
+  <p class='text-muted-foreground'>
+    Lukas场域是我的数字花园。Daily 是后花园，Notes 是沉思室，Study 是竞技场。三个空间共享同一个坐标系：我。
+  </p>
+  <p class='text-muted-foreground'>AI 方向本科生，但还没确定好方向，迷茫 ing...</p>
+  <Button title='More about me' class='w-fit self-end' href='/about' variant='ahead' />
+</Section>
       {
         allPostsByDate.length > 0 && (
           <Section title='Posts'>
