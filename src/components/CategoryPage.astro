@@ -1,10 +1,22 @@
 ---
-import CategoryPage from '@/components/CategoryPage.astro'
----
-<CategoryPage tag="study" title="Study" />
+import { getCollection } from 'astro:content'
+import PageLayout from '@/layouts/CommonPage.astro'
 
-<PageLayout title='Study' {headings}>
-  <h2 id='study'>Study</h2>
+interface Props {
+  tag: string
+  title: string
+}
+
+const { tag, title } = Astro.props
+const allPosts = await getCollection('blog')
+
+const posts = allPosts
+  .filter(post => post.data.tags?.includes(tag))
+  .sort((a, b) => new Date(b.data.publishDate).valueOf() - new Date(a.data.publishDate).valueOf())
+---
+
+<PageLayout title={title}>
+  <h2 class="text-3xl font-bold mb-2">{title}</h2>
   <p class="mb-6 text-gray-400">Page 1 - Showing {posts.length} of {posts.length} posts</p>
   
   <div class="grid gap-6">

@@ -1,59 +1,130 @@
-import { glob } from 'astro/loaders'
-import { defineCollection, z } from 'astro:content'
+import { rehypeHeadingIds } from '@astrojs/markdown-remark'
+import vercel from '@astrojs/vercel'
+import AstroPureIntegration from 'astro-pure'
+import { defineConfig, fontProviders } from 'astro/config'
+import rehypeKatex from 'rehype-katex'
+import remarkMath from 'remark-math'
 
-function removeDupsAndLowerCase(array: string[]) {
-  if (!array.length) return array
-  const lowercaseItems = array.map((str) => str.toLowerCase())
-  const distinctItems = new Set(lowercaseItems)
-  return Array.from(distinctItems)
-}
+// Local integrations
+import rehypeAutolinkHeadings from './src/plugins/rehype-auto-link-headings.ts'
+// Shiki
+import {
+  addCollapse,
+  addCopyButton,
+  addLanguage,
+  addTitle,
+  updateStyle
+} from './src/plugins/shiki-custom-transformers.ts'
+import {
+  transformerNotationDiff,
+  transformerNotationHighlight,
+  transformerRemoveNotationEscape
+} from './src/plugins/shiki-official/transformers.ts'
+import config from './src/site.config.ts'
 
-// Define blog collection
-const blog = defineCollection({
-  // Load Markdown and MDX files in the `src/content/blog/` directory.
-  loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
-  // Required
-  schema: ({ image }) =>
-    z.object({
-      // Required
-      title: z.string().max(60),
-      description: z.string().max(160),
-      publishDate: z.coerce.date(),
-      // Optional
-      updatedDate: z.coerce.date().optional(),
-      heroImage: z
-        .object({
-          src: image(),
-          alt: z.string().optional(),
-          inferSize: z.boolean().optional(),
-          width: z.number().optional(),
-          height: z.number().optional(),
+// https://astro.build/config
+export default defineConfig({
+  // [Basic]
+  site: 'https://my-blog-pure.vercel.app',
+  // Deploy to a sub path
+  // https://astro-pure.js.org/docs/setup/deployment#platform-with-base-path
+  // base: '/astro-pure/',
+  trailingSlash: 'never',
+  // root: './my-project-directory',
+  server: { host: true },
 
-          color: z.string().optional()
-        })
-        .optional(),
-      tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
-      language: z.string().optional(),
-      draft: z.boolean().default(false),
-      // Special fields
-      comment: z.boolean().default(true)
-    })
+  // [Adapter]
+  // https://docs.astro.build/en/guides/deploy/
+  adapter: vercel({ imageService: true }),
+  output: 'server',
+  // Local (standalone)
+  // adapter: node({ mode: 'standalone' }),
+  // output: 'server',
+
+  // [Assets]
+  image: {
+    responsiveStyles: true,
+    service: { entrypoint: 'astro/assets/services/sharp' },
+    remotePatterns: [
+      // Allow improve Github activity chart
+      {
+        protocol: 'https',
+        hostname: '**.rshah.org'
+      }
+    ]
+  },
+
+  // [Markdown]
+  markdown: {
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [
+      [rehypeKatex, {}],
+      rehypeHeadingIds,
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: 'append',
+          properties: { className: ['anchor'] },
+          content: { type: 'text', value: '#' }
+        }
+      ]
+    ],
+    // https://docs.astro.build/en/guides/syntax-highlighting/
+    shikiConfig: {
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark'
+      },
+      transformers: [
+        // Two copies of @shikijs/types (one under node_modules
+        // and another nested under @astrojs/markdown-remark → shiki).
+        // Official transformers
+        // @ts-ignore this happens due to multiple versions of shiki types
+        transformerNotationDiff(),
+        // @ts-ignore this happens due to multiple versions of shiki types
+        transformerNotationHighlight(),
+        // @ts-ignore this happens due to multiple versions of shiki types
+        transformerRemoveNotationEscape(),
+        // Custom transformers
+        // @ts-ignore this happens due to multiple versions of shiki types
+        updateStyle(),
+        // @ts-ignore this happens due to multiple versions of shiki types
+        addTitle(),
+        // @ts-ignore this happens due to multiple versions of shiki types
+        addLanguage(),
+        // @ts-ignore this happens due to multiple versions of shiki types
+        addCopyButton(2000), // timeout in ms
+        // @ts-ignore this happens due to multiple versions of shiki types
+        addCollapse(15) // max lines that needs to collapse
+      ]
+    }
+  },
+
+  // [Integrations]
+  integrations: [
+    // astro-pure will automatically add sitemap, mdx & unocss
+    // sitemap(),
+    // mdx(),
+    AstroPureIntegration(config)
+  ],
+
+  // [Experimental]
+  experimental: {
+    // Allow compatible editors to support intellisense features for content collection entries
+    contentIntellisense: true,
+    // Enable SVGO optimization for SVG assets
+    svgo: true,
+    // Enable font preloading and optimization
+    // 注释掉自定义字体，解决字体闪烁/抽搐问题
+    // fonts: [
+    //   {
+    //     provider: fontProviders.fontshare(),
+    //     name: 'Satoshi',
+    //     cssVariable: '--font-satoshi',
+    //     styles: ['normal', 'italic'],
+    //     weights: [400, 500],
+    //     subsets: ['latin']
+    //   }
+    // ]
+  }
 })
-
-// Define docs collection
-const docs = defineCollection({
-  loader: glob({ base: './src/content/docs', pattern: '**/*.{md,mdx}' }),
-  schema: () =>
-    z.object({
-      title: z.string().max(60),
-      description: z.string().max(160),
-      publishDate: z.coerce.date().optional(),
-      updatedDate: z.coerce.date().optional(),
-      tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
-      draft: z.boolean().default(false),
-      // Special fields
-      order: z.number().default(999)
-    })
-})
-
-export const collections = { blog, docs }

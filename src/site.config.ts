@@ -3,11 +3,11 @@ import type { CardListData, Config, IntegrationUserConfig, ThemeUserConfig } fro
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** Title for your website. Will be used in metadata and as browser tab title. */
-  title: 'Lukas场域',
+  title: 'Lukas Space-卢克斯场域',
   /** Will be used in index page & copyright declaration */
   author: 'Lukas L.',
   /** Description metadata for your website. Can be used in page metadata. */
-  description: 'Stay hungry, stay foolish',
+  description: 'Lukas 场域 — 记录技术探索、哲学思考与竞赛复盘',
   /** The default favicon for your site which should be a path to an image in the `public/` directory. */
   favicon: '/favicon/favicon.ico',
   /** The default social card image for your site which should be a path to an image in the `public/` directory. */
@@ -31,55 +31,46 @@ export const theme: ThemeUserConfig = {
   },
 
   titleDelimiter: '•',
-  prerender: true, // pagefind search is not supported with prerendering disabled
+  prerender: true,
   npmCDN: 'https://cdn.jsdelivr.net/npm',
 
   // Still in test
-  head: [
-    /* Telegram channel */
-    // {
-    //   tag: 'meta',
-    //   attrs: { name: 'telegram:channel', content: '@cworld0_cn' },
-    //   content: ''
-    // }
-  ],
+  head: [],
   customCss: [],
 
   /** Configure the header of your site. */
-    header: {
+  header: {
     menu: [
-      { title: 'Daily', link: '/tags/daily' },
-      { title: 'Notes', link: '/tags/notes' },
-      { title: 'Study', link: '/tags/study' },
+      { title: 'Daily', link: '/daily' },
+      { title: 'Notes', link: '/notes' },
+      { title: 'Study', link: '/study' },
       { title: 'Projects', link: '/projects' },
       { title: 'Links', link: '/links' },
       { title: 'About', link: '/about' }
     ]
-  },           // ← 注意这里是 }, 不是 }
+  },
 
   /** Configure the footer of your site. */
   footer: {
     // Year format
     year: `© ${new Date().getFullYear()}`,
-    // year: `© 2019 - ${new Date().getFullYear()}`,
     links: [
-      // Registration link
-      {
-        title: 'Moe ICP 114514',
-        link: 'https://icp.gov.moe/?keyword=114514',
-        style: 'text-sm' // Uno/TW CSS class
-      },
-      // Privacy Policy link
+      // 没有备案信息就先注释掉，等有真实备案再加
+      // {
+      //   title: '备案号',
+      //   link: 'https://beian.miit.gov.cn/',
+      //   style: 'text-sm'
+      // },
       {
         title: 'Site Policy',
         link: '/terms',
-        pos: 2 // position set to 2 will be appended to copyright line
+        pos: 2
       }
     ],
-    /** Enable displaying a “Astro & Pure theme powered” link in your site’s footer. */
+    /** Enable displaying a "Astro & Pure theme powered" link in your site's footer. */
     credits: true,
     /** Optional details about the social media accounts for this site. */
-    social: { github: 'https://github.com/cworld1/astro-theme-pure' }
+    social: { github: 'https://github.com/zTy-R' }
   },
 
   // [Content]
@@ -95,8 +86,6 @@ export const theme: ThemeUserConfig = {
     /** Share buttons to show */
     // Currently support weibo, x, bluesky
     share: ['weibo', 'x', 'bluesky']
-    /** Enable image captions (default false) */
-    // imageCaption: true
   }
 }
 
@@ -105,19 +94,13 @@ export const integ: IntegrationUserConfig = {
   // https://astro-pure.js.org/docs/integrations/links
   links: {
     // Friend logbook
-    logbook: [
-      { date: '2025-03-16', content: 'Is there a leakage?' },
-      { date: '2025-03-16', content: 'A leakage of what?' },
-      { date: '2025-03-16', content: 'I have a full seat of water, like, full of water!' },
-      { date: '2025-03-16', content: 'Must be the water.' },
-      { date: '2025-03-16', content: "Let's add that to the words of wisdom." }
-    ],
+    logbook: [],
     // Yourself link info
     applyTip: [
       { name: 'Name', val: theme.title },
       { name: 'Desc', val: theme.description || 'Null' },
-      { name: 'Link', val: 'https://astro-pure.js.org/' },
-      { name: 'Avatar', val: 'https://astro-pure.js.org/favicon/favicon.ico' }
+      { name: 'Link', val: 'https://my-blog-pure.vercel.app/' },
+      { name: 'Avatar', val: 'https://my-blog-pure.vercel.app/favicon/favicon.ico' }
     ],
     // Cache avatars in `public/avatars/` to improve user experience.
     cacheAvatar: false
@@ -125,18 +108,8 @@ export const integ: IntegrationUserConfig = {
   // [Search]
   pagefind: true,
   // Add a random quote to the footer (default on homepage footer)
-  // See: https://astro-pure.js.org/docs/integrations/advanced#web-content-render
   // [Quote]
   quote: {
-    // - Hitokoto
-    // https://developer.hitokoto.cn/sentence/#%E8%AF%B7%E6%B1%82%E5%9C%B0%E5%9D%80
-    // server: 'https://v1.hitokoto.cn/?c=i',
-    // target: `(data) => (data.hitokoto || 'Error')`
-    // - Quotable
-    // https://github.com/lukePeavey/quotable
-    // server: 'http://api.quotable.io/quotes/random?maxLength=60',
-    // target: `(data) => data[0].content || 'Error'`
-    // - DummyJSON
     server: 'https://dummyjson.com/quotes/random',
     target: `(data) => (data.quote.length > 80 ? \`\${data.quote.slice(0, 80)}...\` : data.quote || 'Error')`
   },
@@ -144,22 +117,21 @@ export const integ: IntegrationUserConfig = {
   // https://unocss.dev/presets/typography
   typography: {
     class: 'prose text-base',
-    // The style of blockquote font `normal` / `italic` (default to italic in typography)
     blockquoteStyle: 'italic',
-    // The style of inline code block `code` / `modern` (default to code in typography)
     inlineCodeBlockStyle: 'modern'
   },
   // [Lightbox]
-  // A lightbox library that can add zoom effect
-  // https://astro-pure.js.org/docs/integrations/others#medium-zoom
   mediumZoom: {
-    enable: true, // disable it will not load the whole library
+    enable: true,
     selector: '.prose .zoomable',
     options: {
       className: 'zoomable'
     }
   },
   // Comment system
+  // ⚠️ 重要：这个 Waline 服务器是模板作者的测试服，你会看到别人的评论！
+  // 方案 1：改成 false 关闭评论（最简单）
+  // 方案 2：去 https://waline.js.org/ 部署自己的 Waline 服务，然后把 server 改成你的地址
   waline: {
     enable: true,
     // Server service link
@@ -170,7 +142,6 @@ export const integ: IntegrationUserConfig = {
     emoji: ['bmoji', 'weibo'],
     // Refer https://waline.js.org/en/reference/client/props.html
     additionalConfigs: {
-      // search: false,
       pageview: true,
       comment: true,
       locale: {
