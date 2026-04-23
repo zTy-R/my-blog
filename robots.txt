@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://my-blog-pure.vercel.app/sitemap-index.xml

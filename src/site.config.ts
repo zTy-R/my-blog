@@ -7,7 +7,7 @@ export const theme: ThemeUserConfig = {
   /** Will be used in index page & copyright declaration */
   author: 'Lukas L.',
   /** Description metadata for your website. Can be used in page metadata. */
-  description: 'Lukas 场域 — 记录技术探索、哲学思考与竞赛复盘',
+  description: 'Lukas 场域 — 记录技术探索、哲学思考与竞赛学习',
   /** The default favicon for your site which should be a path to an image in the `public/` directory. */
   favicon: '/favicon/favicon.ico',
   /** The default social card image for your site which should be a path to an image in the `public/` directory. */
@@ -129,21 +129,15 @@ export const integ: IntegrationUserConfig = {
     }
   },
   // Comment system
-  // ⚠️ 重要：这个 Waline 服务器是模板作者的测试服，你会看到别人的评论！
-  // 方案 1：改成 false 关闭评论（最简单）
-  // 方案 2：去 https://waline.js.org/ 部署自己的 Waline 服务，然后把 server 改成你的地址
+  // ⚠️ 当前已关闭评论。如需开启，请部署自己的 Waline 服务并修改 server 地址。
   waline: {
-    enable: true,
-    // Server service link
-    server: 'https://astro-theme-pure-waline.arthals.ink/',
-    // Show meta info for comments
+    enable: false,
+    server: '',
     showMeta: false,
-    // Refer https://waline.js.org/en/guide/features/emoji.html
     emoji: ['bmoji', 'weibo'],
-    // Refer https://waline.js.org/en/reference/client/props.html
     additionalConfigs: {
-      pageview: true,
-      comment: true,
+      pageview: false,
+      comment: false,
       locale: {
         reaction0: 'Like',
         placeholder: 'Welcome to comment. (Email to receive replies. Login is unnecessary)'
